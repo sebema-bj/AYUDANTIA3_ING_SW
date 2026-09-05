@@ -6,12 +6,16 @@ import prisma from '../config/prisma.js';
  */
 export const getAllProducts = async (req, res, next) => {
   try {
-    const { categoryId, minPrice, maxPrice, inStock } = req.query;
+    const { categoryId, brandId, minPrice, maxPrice, inStock } = req.query;
 
     const where = {};
 
     if (categoryId !== undefined) {
       where.categoryId = Number(categoryId);
+    }
+
+    if (brandId !== undefined) {
+      where.brandId = Number(brandId);
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -29,6 +33,12 @@ export const getAllProducts = async (req, res, next) => {
       where,
       include: {
         category: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        brand: {
           select: {
             id: true,
             name: true
@@ -60,7 +70,8 @@ export const getProductById = async (req, res, next) => {
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
-        category: true
+        category: true,
+        brand: true
       }
     });
 
@@ -105,7 +116,8 @@ export const createProduct = async (req, res, next) => {
         categoryId
       },
       include: {
-        category: true
+        category: true,
+        brand: true
       }
     });
 
@@ -143,7 +155,8 @@ export const updateProduct = async (req, res, next) => {
       where: { id: productId },
       data: updateData,
       include: {
-        category: true
+        category: true,
+        brand: true
       }
     });
 
